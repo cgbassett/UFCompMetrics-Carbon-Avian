@@ -9,7 +9,7 @@ list.compmetrics <- read.xlsx("ListofUFCompMetrics.xlsx")
 #======CARBON======
 
 #loading carbon data and formatting
-carbon.data<- read.csv("TEST_UFcompmetrics_carbon_19Nov24.csv")
+carbon.data<- read.csv("CarbonUFCompositionMetric_RawData_21Nov24.csv")
 
 #cut down to only necessary columns for figures (so far..)
 carbon.meta <- carbon.data[ ,c("Full.citation", "Title","Year", "Journal", "Publication.Type.", "Country.of.First.Author",
@@ -29,6 +29,12 @@ carbon.separatemetrics <- cSplit_e(data = carbon.meta, split.col = "Composition.
 #select only comp metrics
 carbon.compmetricsonly <- select(carbon.separatemetrics, contains("Composition.metric_"))
 
+#remove "Composition.metric_"
+for ( col in 1:ncol(carbon.compmetricsonly)){
+  colnames(carbon.compmetricsonly)[col] <-  
+    sub("Composition.metric_", "", colnames(carbon.compmetricsonly)[col])
+}
+
 #replace NA with 0
 carbon.compmetricsonly[is.na(carbon.compmetricsonly)] <- 0
 
@@ -41,11 +47,13 @@ counts.carbon.compmetricsonly_df <- data.frame(
   Column = names(counts.carbon.compmetricsonly),
   Count = counts.carbon.compmetricsonly)
 
+#Remove N/A row
+counts.carbon.compmetricsonly_df <- counts.carbon.compmetricsonly_df %>% filter(!(Column == "N/A"))
+
 #sort
 counts.carbon.compmetricsonly_df$Column <- 
   factor(counts.carbon.compmetricsonly_df$Column, 
          levels = counts.carbon.compmetricsonly_df$Column[order(-counts.carbon.compmetricsonly_df$Count)])
-
 
 # Create the bar chart
 
@@ -54,7 +62,9 @@ carboncounts_barplot <-
   geom_bar(stat = "identity") +
   coord_flip()+
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-  labs(title = "Total Count", x = "Column", y = "Count")
+  labs(title = "Count of carbon articles by composition metric", x = "Composition metric", y = "Count of articles")
+
+print(carboncounts_barplot)
 
 
 
@@ -66,7 +76,7 @@ carboncounts_barplot <-
 #===AVIAN===
 
 #loading avian data and formatting
-avian.data<- read.csv("TEST_UFcompmetrics_avian_21Nov24.csv")
+avian.data<- read.csv("AvianUFCompositionMetric_RawData_21Nov24.csv")
 
 #cut down to only necessary columns for figures (so far..)
 avian.meta <- avian.data[,c("Rayyan.ID",
@@ -81,7 +91,7 @@ avian.meta <- avian.data[,c("Rayyan.ID",
                             "Bird.domainraw",
                             "Bird.category",
                             "Category.multi",
-                            "Metrics",
+                            "Composition.metric",
                             "Initials")]
 #REPLACE METRICS WITH Composition metric when using full dataset, not TEST
 
@@ -94,10 +104,16 @@ avian.meta<- avian.meta %>%
 avian.meta <- replace(avian.meta, avian.meta=='', NA) 
 
 #separate composition metric column into multiple columns with one metric each
-avian.separatemetrics <- cSplit_e(data = avian.meta, split.col = "Metrics", sep=",", type = "character") 
+avian.separatemetrics <- cSplit_e(data = avian.meta, split.col = "Composition.metric", sep=",", type = "character") 
 
 #select only comp metrics
-avian.separatemetricsonly <- select(avian.separatemetrics, contains("Metrics_"))
+avian.separatemetricsonly <- select(avian.separatemetrics, contains("Composition.metric_"))
+
+#remove "Composition.metric_"
+for ( col in 1:ncol(avian.separatemetricsonly)){
+  colnames(avian.separatemetricsonly)[col] <-  
+    sub("Composition.metric_", "", colnames(avian.separatemetricsonly)[col])
+}
 
 #replace NA with 0
 avian.separatemetricsonly[is.na(avian.separatemetricsonly)] <- 0
@@ -111,19 +127,22 @@ counts.avian.separatemetricsonly_df <- data.frame(
   Column = names(counts.avian.separatemetricsonly),
   Count = counts.avian.separatemetricsonly)
 
+#Remove N/A row
+counts.avian.separatemetricsonly_df <- counts.avian.separatemetricsonly_df %>% filter(!(Column == "N/A"))
+
+
 #sort
 counts.avian.separatemetricsonly_df$Column <- 
   factor(counts.avian.separatemetricsonly_df$Column, 
          levels = counts.avian.separatemetricsonly_df$Column[order(-counts.avian.separatemetricsonly_df$Count)])
 
-
 # Create the bar chart
 
 aviancounts_barplot <-
   ggplot(counts.avian.separatemetricsonly_df, aes(x = Column, y = Count)) +
-  geom_bar(stat = "identity") +
+  geom_bar(stat = "identity", position = "dodge") +
   coord_flip()+
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-  labs(title = "Total Count", x = "Column", y = "Count")
+  labs(title = "Count of avian articles by composition metric", x = "Composition metric", y = "Count of articles")
 
-
+print(aviancounts_barplot)
