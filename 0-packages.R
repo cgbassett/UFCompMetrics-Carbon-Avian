@@ -1,4 +1,4 @@
-# all packages needed for scripts from Kayleigh H-T's sys map analysis
+# all packages needed for scripts from Kayleigh H-T's sys map analysis, plus others Corey added
 
 library(tidyverse)
 library(maps)
@@ -14,6 +14,9 @@ library(cartography)
 library(sf)
 library(data.table)
 library(janitor)
+library(reshape2)
 
 install.packages("splitstackshape")
 library(splitstackshape)
+
+install.packages("reshape2")
