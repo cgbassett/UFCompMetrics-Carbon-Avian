@@ -4,6 +4,14 @@
 #packagesneeded
 source('0-packages.R')
 
+
+install.packages("cowplot")
+library(cowplot)
+install.packages("patchwork")
+library(patchwork)
+library(forcats)
+
+
 #bar plots with counts of total
 carboncounts_barplot <- counts.carbon.compmetricsonly_df %>%
   ggplot(aes(x = Column, y = Count)) +
@@ -23,30 +31,39 @@ aviancounts_barplot  <- counts.avian.separatemetricsonly_df %>%
   theme_minimal()
 print(aviancounts_barplot)
 
-#bar plots with percent of total *** SOMETHING IS WRONG WITH THE PERCENT CALC
+#bar plots with percent of total
 
-pct.carbon.compmetricsonly_df <- mutate(counts.carbon.compmetricsonly_df, Percent = (counts.carbon.compmetricsonly_df$Count / 109) *100)
+pct.carbon.compmetricsonly_df <- counts.carbon.compmetricsonly_df %>%
+  mutate(Percent = (Count / 109) * 100)
 
 carbonpct_barplot <- pct.carbon.compmetricsonly_df %>%
   ggplot(aes(x = Column, y = Percent)) +
   geom_bar(stat = "identity", fill = "#FDE725FF") +
   coord_flip() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   scale_y_continuous(labels = scales::percent_format(scale = 1), limits = c(0, 100)) +
   labs(title = "Percent of carbon articles by composition metric (n=109)", x = "Composition metric", y = "Percent of articles") +
-  theme_minimal()
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = 10)) +
+  geom_text(aes(label = paste0(round(Percent, 1), "%")), hjust = -0.1) #value labels on bars
 print(carbonpct_barplot)
 
-pct.avian.compmetricsonly_df <- mutate(counts.avian.compmetricsonly_df, Percent = (counts.avian.compmetricsonly_df$Count / 158) *100)
+pct.avian.compmetricsonly_df <- counts.avian.compmetricsonly_df %>%
+  mutate(Percent = (Count / 158) * 100)
 
-avianpct_barplot  <- pct.avian.compmetricsonly_df %>%
+avianpct_barplot <- pct.avian.compmetricsonly_df %>%
   ggplot(aes(x = Column, y = Percent)) +
   geom_bar(stat = "identity", fill = "#404788FF") +
+  geom_text(aes(label = paste0(round(Percent, 1), "%")), 
+            hjust = -0.1, size = 3) +
   coord_flip() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   scale_y_continuous(labels = scales::percent_format(scale = 1), limits = c(0, 100)) +
-  labs(title = "Percent of avian articles by composition metric (n=158)", x = "Composition metric", y = "Percent of articles") +
-  theme_minimal()
+  labs(
+    title = "Percent of avian articles by composition metric (n=158)",
+    x = "Composition metric",
+    y = "Percent of articles"
+  ) +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = 10))
 print(avianpct_barplot)
 
 #side by side bar -- doesn't really work well with two dfs, need to join
@@ -64,102 +81,74 @@ sidebyside <- ggplot() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 print(sidebyside)
 
-
-#Count of metrics per article
-
-avian.separatemetrics_ctperarticle <- avian.separatemetrics %>%
-  mutate(count.metricsperarticle = rowSums(across(`Composition.metric_age`:`Composition.metric_vine layer`), na.rm = TRUE))
-
-summary(avian.separatemetrics_ctperarticle$count.metricsperarticle)
-
-avian.ctsparticle.hist <-
-  ggplot(avian.separatemetrics_ctperarticle, aes(x = count.metricsperarticle)) +
-  geom_histogram(binwidth = 1, fill = "#404788FF", color = "black", alpha = 0.7) +
-  labs(title = "Histogram of Count of Metrics per Article (Avian, n=158)", x = "Count of Metrics", y = "Number of Articles") +
-  scale_x_continuous(breaks = seq(0, max(avian.separatemetrics_ctperarticle$count.metricsperarticle), by = 1)) +
-  scale_y_continuous(limits = c(0, 35)) +
-  theme_minimal()
-print(avian.ctsparticle.hist)
-
-
-carbon.separatemetrics_ctperarticle <- carbon.separatemetrics %>%
-  mutate(count.metricsperarticle = rowSums(across(`Composition.metric_age`:`Composition.metric_vertical layer assessment`), na.rm = TRUE))
-
-summary(carbon.separatemetrics_ctperarticle$count.metricsperarticle)
-
-carbon.ctsparticle.hist <-
-ggplot(carbon.separatemetrics_ctperarticle, aes(x = count.metricsperarticle)) +
-  geom_histogram(binwidth = 1, fill = "#FDE725FF", color = "black", alpha = 0.7) +
-  scale_x_continuous(breaks = seq(0, max(carbon.separatemetrics_ctperarticle$count.metricsperarticle), by = 1)) +
-  scale_y_continuous(limits = c(0, 35)) +
-  labs(title = "Histogram of Count of Metrics per Article (Carbon, n=109)", x = "Count of Metrics", y = "Number of Articles") +
-  theme_minimal()
-print(carbon.ctsparticle.hist)
-
-#metrics by scale of study
-avian.urbscalecompmetricsonly <- avian.separatemetrics %>%
-  select(Urb.scale, contains("Composition.metric_"))
-
-    #remove "Composition.metric_"
-    for ( col in 1:ncol(avian.urbscalecompmetricsonly)){
-      colnames(avian.urbscalecompmetricsonly)[col] <-  
-        sub("Composition.metric_", "", colnames(avian.urbscalecompmetricsonly)[col])
-    }
-
-    #replace NA with 0
-    avian.urbscalecompmetricsonly[is.na(avian.urbscalecompmetricsonly)] <- 0
+#side by side with cowplot ***Not that helpful, because the metrics are in diff orders
     
-    #count frequency of articles by each urb.scale
-    avian.urbscalecounts <- avian.urbscalecompmetricsonly %>% count(Urb.scale)
-    avian.urbscalecounts <- avian.urbscalecounts %>%
-                            mutate(Percent = (n/158)*100)
+    combined_plot <- plot_grid(
+      carbonpct_barplot, 
+      avianpct_barplot, 
+      labels = c("Carbon", "Avian"),
+      ncol = 2,
+      align = "v",  # Align vertically for y-axis consistency
+      axis = "tb"   # Align top and bottom axes
+    )
     
-    #summary table
-    avian.urbanscale <- avian.urbscalecompmetricsonly %>%
-                        group_by(Urb.scale) %>%
-                        summarize(across(everything(),sum)) %>%
-                        mutate(count.metricsperurbscale = rowSums(across(`age`:`vine layer`), na.rm = TRUE))
+    print(combined_plot)
+    
+#trying out combining
 
-    #bubble chart - not great
-    ggplot(avian.urbanscale, aes(x = Urb.scale, y = select(`age`:`vine layer` )) +
-      geom_point(alpha = 0.5) +
-      labs(title = "Bubble Chart of Urban Scale by Forest Comp Metric (Avian)", x = "Urban Scale", y = "Forest Composition Metric") +
-      theme_minimal() +
-      scale_size_continuous(range = c(3, 15))
-    
-        
-carbon.urbscalecompmetricsonly <- carbon.separatemetrics %>%
-   select(Urb.scale, contains("Composition.metric_"))
-    
-    #remove "Composition.metric_"
-    for ( col in 1:ncol(carbon.urbscalecompmetricsonly)){
-      colnames(carbon.urbscalecompmetricsonly)[col] <-  
-        sub("Composition.metric_", "", colnames(carbon.urbscalecompmetricsonly)[col])
-    }
-    
-    #replace NA with 0
-    carbon.urbscalecompmetricsonly[is.na(carbon.urbscalecompmetricsonly)] <- 0
-    
-    #count frequency of articles by each urb.scale
-    carbon.urbscalecounts <- carbon.urbscalecompmetricsonly %>% count(Urb.scale)
-    carbon.urbscalecounts <- carbon.urbscalecounts %>%
-      mutate(Percent = (n/109)*100)
-    
-    #summary table
-    carbon.urbanscale <- carbon.urbscalecompmetricsonly %>%
-      group_by(Urb.scale) %>%
-      summarize(across(everything(),sum)) %>%
-      subset(select = -c(`N/A`)) %>%
-      mutate(count.metricsperurbscale = rowSums(across(`age`:`vertical layer assessment`)))
-    
-    carbon.urbanscale <- melt(carbon.urbanscale, id.vars = "Urb.scale", variable.name = "Metric", value.name = "Value",)
-    
-    #bubble chart - is this even useful?
-    ggplot(carbon.urbanscale, aes(x = Urb.scale, y = Metric, size = Value )) +
-             geom_point(alpha = 0.5) +
-             labs(title = "Bubble Chart of Urban Scale by Forest Comp Metric (Carbon)", x = "Urban Scale", y = "Forest Composition Metric") +
-             theme_minimal() +
-             scale_size_continuous(range = c(3, 15))
+pct.carbon.compmetricsonly_df$Group <- "Carbon"
+pct.avian.compmetricsonly_df$Group <- "Avian"
+
+combined_df <- bind_rows(pct.carbon.compmetricsonly_df, pct.avian.compmetricsonly_df)
+
+combined_df <- combined_df %>%
+  left_join(list.compmetrics, by = c("Column" = "Composition.metric"))
+
+combined_barplot <- combined_df %>%
+  ggplot(aes(x = Column, y = Percent, fill = Group)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.8)) +
+  scale_fill_manual(values = c("Carbon" = "#FDE725FF", "Avian" = "#404788FF")) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1), limits = c(0, 100)) +
+  labs(title = "Percent of Articles by Composition Metric",
+       x = "Composition Metric",
+       y = "Percent of Articles",
+       fill = "Group") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+print(combined_barplot)
+
+#faceted by category
+
+facetedcombined <- 
+  ggplot(combined_df, aes(x = Column, y = Percent, fill = Group)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.9), color = "black", size = 0.1) +
+  facet_wrap(~ Category.of.composition.metric, scales = "free_x") +
+  scale_fill_manual(values = c("Carbon" = "#FDE725FF", "Avian" = "#404788FF")) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1), limits = c(0, 100)) +
+  labs(title = "Percent of Avian and Carbon articles by Composition Metric and Category",
+       x = "Composition Metric",
+       y = "Percent of Articles",
+       fill = "Group") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(strip.text = element_text(size = 12, face = "bold")) +
+  theme(strip.background = element_rect(fill = "grey90", color = NA)) +
+  aes(x = fct_reorder(Column, Percent))
+facetedcombined
 
 
-
+#combined, not facted by category
+combined_barplot <- combined_df %>%
+  ggplot(aes(x = fct_reorder(Column, Percent, .desc = TRUE), 
+             y = Percent, fill = Group)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.8)) +
+  scale_fill_manual(values = c("Carbon" = "#FDE725FF", "Avian" = "#404788FF")) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1), limits = c(0, 100)) +
+  labs(title = "Percent of Articles by Composition Metric",
+       x = "Composition Metric",
+       y = "Percent of Articles",
+       fill = "Group") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+print(combined_barplot)
