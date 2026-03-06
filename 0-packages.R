@@ -18,9 +18,4 @@ library(sf)
 library(data.table)
 library(janitor)
 library(reshape2)
-
-
-install.packages("splitstackshape")
 library(splitstackshape)
-
-install.packages("reshape2")

@@ -136,6 +136,7 @@ facetedcombined <-
   theme(strip.background = element_rect(fill = "grey90", color = NA)) +
   aes(x = fct_reorder(Column, Percent))
 facetedcombined
+ggsave("figs/faceted_combined_barplot.pdf", plot = facetedcombined, width = 10, height = 8, units = "in", dpi = 300)
 
 
 #combined, not facted by category
@@ -152,3 +153,4 @@ combined_barplot <- combined_df %>%
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 print(combined_barplot)
+ggsave("figs/combined_barplot.pdf", plot = combined_plot, width = 10, height = 8, units = "in", dpi = 300)

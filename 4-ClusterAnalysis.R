@@ -3,7 +3,6 @@
 
 #packagesneeded
 source('0-packages.R')
-library(tidyverse)
 
 # Build binary matrices (articles x metrics), replacing NA with 0
 avian_comp_cols <- names(avian.separatemetrics) |> stringr::str_subset("^Composition\\.metric_")
@@ -78,42 +77,3 @@ ggsave("figs/avian_metric_cooccurrence.pdf",  plot = avian_cooccur_plot,
        width = 8, height = 7, units = "in", dpi = 300)
 ggsave("figs/carbon_metric_cooccurrence.pdf", plot = carbon_cooccur_plot,
        width = 8, height = 7, units = "in", dpi = 300)
-library(pheatmap)
-
-# Function to compute Jaccard similarity matrix between metrics (columns)
-jaccard_similarity <- function(mat) {
-  # crossprod gives co-occurrence counts (A ∩ B)
-  cooccur <- crossprod(mat)
-  # diagonal gives each metric's total count
-  totals <- diag(cooccur)
-  # Jaccard: |A ∩ B| / |A ∪ B| = cooccur[i,j] / (totals[i] + totals[j] - cooccur[i,j])
-  n <- ncol(mat)
-  jacc <- matrix(0, n, n, dimnames = list(colnames(mat), colnames(mat)))
-  for (i in seq_len(n)) {
-    for (j in seq_len(n)) {
-      union_ij <- totals[i] + totals[j] - cooccur[i, j]
-      jacc[i, j] <- if (union_ij == 0) 0 else cooccur[i, j] / union_ij
-    }
-  }
-  jacc
-}
-
-avian_jacc  <- jaccard_similarity(avian_mat)
-carbon_jacc <- jaccard_similarity(carbon_mat)
-
-# Plot clustered heatmaps
-pheatmap(avian_jacc,
-         clustering_distance_rows = as.dist(1 - avian_jacc),
-         clustering_distance_cols = as.dist(1 - avian_jacc),
-         clustering_method = "ward.D2",
-         color = viridis::viridis(100),
-         main = "Avian: Metric Co-occurrence (Jaccard Similarity)",
-         fontsize = 9)
-
-pheatmap(carbon_jacc,
-         clustering_distance_rows = as.dist(1 - carbon_jacc),
-         clustering_distance_cols = as.dist(1 - carbon_jacc),
-         clustering_method = "ward.D2",
-         color = viridis::viridis(100),
-         main = "Carbon: Metric Co-occurrence (Jaccard Similarity)",
-         fontsize = 9)
