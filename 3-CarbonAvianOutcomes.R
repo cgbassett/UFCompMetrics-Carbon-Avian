@@ -48,3 +48,71 @@ carbon.outcomes <-
     avian.outcomes %>%
     mutate(Percent = (Count/158)*100)
   
+
+  
+
+# Heatmap: frequency of each composition metric by carbon outcome
+comp_cols <- names(carbon.separatemetrics) |> stringr::str_subset("^Composition\\.metric_")
+
+carbon_metric_outcome_heatmap <- carbon.separatemetrics |>
+  select(Rayyan.ID, Carbon.metric, all_of(comp_cols)) |>
+  separate_rows(Carbon.metric, sep = ", ") |>
+  group_by(Carbon.metric) |>
+  summarise(across(all_of(comp_cols), ~sum(., na.rm = TRUE))) |>
+  pivot_longer(-Carbon.metric, names_to = "metric", values_to = "n") |>
+  mutate(metric = str_remove(metric, "Composition\\.metric_"),
+         metric = str_to_title(metric)) |>
+  filter(metric != "N/A") |>
+  ggplot(aes(x = Carbon.metric, y = fct_reorder(metric, n, .fun = sum), fill = n)) +
+  geom_tile(color = "white") +
+  geom_text(aes(label = n, color = n), size = 3) +
+  scale_fill_viridis_c(option = "viridis", direction = 1) +
+  scale_color_gradient(low = "white", high = "black", guide = "none") +
+  labs(
+    x = "Carbon Outcome",
+    y = "Composition Metric",
+    fill = "# Articles",
+    title = "Frequency of Composition Metrics by Carbon Outcome"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1))
+
+carbon_metric_outcome_heatmap
+
+ggsave("figs/carbon_metric_outcome_heatmap.pdf", plot = carbon_metric_outcome_heatmap,
+       width = 8, height = 7, units = "in", dpi = 300)
+
+
+# Heatmap: frequency of each composition metric by avian outcome
+avian_comp_cols <- names(avian.separatemetrics) |> stringr::str_subset("^Composition\\.metric_")
+
+avian_metric_outcome_heatmap <- avian.separatemetrics |>
+  select(Rayyan.ID, Bird.domainraw, all_of(avian_comp_cols)) |>
+  separate_rows(Bird.domainraw, sep = ", ") |>
+  filter(!is.na(Bird.domainraw)) |>
+  group_by(Bird.domainraw) |>
+  summarise(across(all_of(avian_comp_cols), ~sum(., na.rm = TRUE))) |>
+  pivot_longer(-Bird.domainraw, names_to = "metric", values_to = "n") |>
+  mutate(metric = str_remove(metric, "Composition\\.metric_"),
+         metric = str_to_title(metric)) |>
+  filter(metric != "N/A") |>
+  ggplot(aes(x = Bird.domainraw, y = fct_reorder(metric, n, .fun = sum), fill = n)) +
+  geom_tile(color = "white") +
+  geom_text(aes(label = n, color = n), size = 3) +
+  scale_fill_viridis_c(option = "viridis", direction = 1) +
+  scale_color_gradient(low = "white", high = "black", guide = "none") +
+  labs(
+    x = "Avian Outcome",
+    y = "Composition Metric",
+    fill = "# Articles",
+    title = "Frequency of Composition Metrics by Avian Outcome",
+    caption = "N=157, one avian article was only about cavities which could be used as nests and thus did not have a coded avian success outcome"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1))
+
+avian_metric_outcome_heatmap
+
+ggsave("figs/avian_metric_outcome_heatmap.pdf", plot = avian_metric_outcome_heatmap,
+       width = 8, height = 7, units = "in", dpi = 300)
+

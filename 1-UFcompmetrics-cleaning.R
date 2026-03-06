@@ -158,3 +158,7 @@ aviancounts_barplot <-
   labs(title = "Count of avian articles by composition metric (n=158)", x = "Composition metric", y = "Count of articles")
 
 print(aviancounts_barplot)
+
+
+
+

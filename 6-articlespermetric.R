@@ -119,3 +119,6 @@ title <- ggdraw() + draw_label("Histogram of Metrics per Article (Percentage)",
 final_plot <- plot_grid(title, combined_hist, ncol = 1, rel_heights = c(0.1, 1))
 
 print(final_plot)
+
+ggsave("figs/histograms_metrics_per_article_pct.pdf", plot = final_plot,
+       width = 7, height = 5, units = "in", dpi = 300)
