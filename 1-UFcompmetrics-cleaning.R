@@ -4,12 +4,14 @@
 #packagesneeded
 source('0-packages.R')
 
-list.compmetrics <- read.xlsx("ListofUFCompMetrics.xlsx")
+data_dir <- Sys.getenv("DATA_DIR")
+
+list.compmetrics <- read.xlsx(file.path(data_dir, "ListofUFCompMetrics.xlsx"))
 
 #======CARBON======
 
 #loading carbon data and formatting
-carbon.data<- read.csv("CarbonUFCompositionMetric_RawData_21Nov24.csv")
+carbon.data<- read.csv(file.path(data_dir, "CarbonUFCompositionMetric_RawData_21Nov24.csv"))
 
 #cut down to only necessary columns for figures (so far..)
 carbon.meta <- carbon.data[ ,c("Rayyan.ID", "Full.citation", "Title","Year", "Journal", "Publication.Type.", "Country.of.First.Author",
@@ -18,7 +20,7 @@ carbon.meta <- carbon.data[ ,c("Rayyan.ID", "Full.citation", "Title","Year", "Jo
 
 #remove white space (leading and trailing zeros)
 carbon.meta <- carbon.meta %>% 
-  mutate(across(where(is.character), str_trim))
+  mutate(across(where(is.character), str_trim)))
 
 #replace empty cells with N/A
 carbon.meta <- replace(carbon.meta, carbon.meta=='', NA) 
@@ -83,7 +85,7 @@ print(carboncounts_barplot)
 #===AVIAN===
 
 #loading avian data and formatting
-avian.data<- read.csv("AvianUFCompositionMetric_RawData_21Nov24.csv")
+avian.data<- read.csv(file.path(data_dir, "AvianUFCompositionMetric_RawData_21Nov24.csv"))
 
 #cut down to only necessary columns for figures (so far..)
 avian.meta <- avian.data[,c("Rayyan.ID",
