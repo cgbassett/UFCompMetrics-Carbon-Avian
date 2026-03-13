@@ -1,14 +1,8 @@
 #Corey Bassett
-#Script for visualizations of UF composition metrics
+#Script for visualizations of number of articles per metric
 
 #packagesneeded
 source('0-packages.R')
-
-
-install.packages("cowplot")
-library(cowplot)
-install.packages("patchwork")
-library(patchwork)
 
 
 #Count of metrics per article AVIAN

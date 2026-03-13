@@ -14,7 +14,7 @@ carbon.data<- read.csv("CarbonUFCompositionMetric_RawData_21Nov24.csv")
 #cut down to only necessary columns for figures (so far..)
 carbon.meta <- carbon.data[ ,c("Rayyan.ID", "Full.citation", "Title","Year", "Journal", "Publication.Type.", "Country.of.First.Author",
                                "Study.Country", "Urb.scale", "Year.start", "Year.end", "Comparator", 
-                               "Forest.comp", "Rec.included","Rec1", "Rec2", "Rec3", "Carbon.metric","Composition.metric","Initials")]
+                               "Forest.comp", "Rec.included","Rec1", "Rec2", "Rec3", "Carbon.metric","Composition.metric")]
 
 #remove white space (leading and trailing zeros)
 carbon.meta <- carbon.meta %>% 
@@ -98,8 +98,8 @@ avian.meta <- avian.data[,c("Rayyan.ID",
                             "Bird.domainraw",
                             "Bird.category",
                             "Category.multi",
-                            "Composition.metric",
-                            "Initials")]
+                            "Composition.metric"
+                            )]
 
 #remove white space (leading and trailing zeros)
 avian.meta<- avian.meta %>% 

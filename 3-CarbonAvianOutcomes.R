@@ -1,5 +1,5 @@
 #Corey Bassett
-#Script for Carbon and Avian outcomes, as coded previously in Hutt-Taylor et al., 2024 (See Table 3 of that paper for definitions).
+#Script for frequencies of Carbon and Avian outcomes and heatmaps. See Table 3 of Hutt-Taylor et al., 2024 for definitions).
 
 #packagesneeded
 source('0-packages.R')

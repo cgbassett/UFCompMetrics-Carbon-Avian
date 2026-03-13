@@ -5,13 +5,6 @@
 source('0-packages.R')
 
 
-install.packages("cowplot")
-library(cowplot)
-install.packages("patchwork")
-library(patchwork)
-library(forcats)
-
-
 #bar plots with counts of total
 carboncounts_barplot <- counts.carbon.compmetricsonly_df %>%
   ggplot(aes(x = Column, y = Count)) +
@@ -118,7 +111,7 @@ combined_barplot <- combined_df %>%
 
 print(combined_barplot)
 
-#faceted by category
+#faceted by category **I like this the best
 
 facetedcombined <- 
   ggplot(combined_df, aes(x = Column, y = Percent, fill = Group)) +
