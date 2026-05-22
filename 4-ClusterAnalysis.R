@@ -1,5 +1,5 @@
 #Corey Bassett
-#Script for metric co-occurrence cluster analysis (Jaccard similarity)
+#Script for metric co-occurrence analysis (Jaccard similarity)
 
 #packagesneeded
 source('0-packages.R')
