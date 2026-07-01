@@ -41,39 +41,44 @@ jaccard_similarity <- function(mat) {
   jacc
 }
 
-# Helper to plot clustered heatmap
-plot_cooccur_heatmap <- function(jacc_mat, title) {
-  hc    <- hclust(as.dist(1 - jacc_mat), method = "ward.D2")
-  order <- hc$labels[hc$order]
+# Helper to plot clustered heatmap with dendrograms via pheatmap
+plot_cooccur_heatmap <- function(jacc_mat, title, filename = NA) {
+  # sqrt(1 - Jaccard) is Euclidean; ward.D2 squares it internally, so the
+  # input must be the un-squared distance (not 1 - S) for correct Ward's method
+  d <- as.dist(sqrt(1 - jacc_mat))
 
-  as.data.frame(jacc_mat) |>
-    rownames_to_column("metric_x") |>
-    pivot_longer(-metric_x, names_to = "metric_y", values_to = "jaccard") |>
-    mutate(metric_x = factor(metric_x, levels = order),
-           metric_y = factor(metric_y, levels = order)) |>
-    ggplot(aes(x = metric_x, y = metric_y, fill = jaccard)) +
-    geom_tile(color = "white") +
-    scale_fill_viridis_c(option = "viridis", limits = c(0, 1),
-                         labels = scales::percent) +
-    labs(x = NULL, y = NULL, fill = "Jaccard\nSimilarity", title = title) +
-    theme_minimal() +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1),
-          axis.text    = element_text(size = 8))
+  pheatmap(
+    jacc_mat,
+    clustering_distance_rows = d,
+    clustering_distance_cols = d,
+    clustering_method        = "ward.D2",
+    color        = viridisLite::viridis(100),
+    breaks       = seq(0, 1, length.out = 101),
+    legend_breaks = c(0, 0.25, 0.5, 0.75, 1, 1),
+    legend_labels = c("0", "0.25", "0.50", "0.75", "1",
+                      "Jaccard\nsimilarity\n"),
+    border_color = "white",
+    display_numbers = FALSE,
+    main         = title,
+    fontsize     = 8,
+    filename     = filename
+  )
 }
 
 avian_jacc  <- jaccard_similarity(avian_mat)
 carbon_jacc <- jaccard_similarity(carbon_mat)
 
-# Plot and save
+# Plot (dendrograms drawn on rows and columns)
 avian_cooccur_plot <- plot_cooccur_heatmap(avian_jacc,
                                            "Avian: Metric Co-occurrence (Jaccard Similarity)")
 carbon_cooccur_plot <- plot_cooccur_heatmap(carbon_jacc,
                                             "Carbon: Metric Co-occurrence (Jaccard Similarity)")
 
-avian_cooccur_plot
-carbon_cooccur_plot
+# Save (pheatmap writes directly to file based on extension)
+plot_cooccur_heatmap(avian_jacc,
+                     "Avian: Metric Co-occurrence (Jaccard Similarity)",
+                     filename = "figs/avian_metric_cooccurrence.pdf")
+plot_cooccur_heatmap(carbon_jacc,
+                     "Carbon: Metric Co-occurrence (Jaccard Similarity)",
+                     filename = "figs/carbon_metric_cooccurrence.pdf")
 
-ggsave("figs/avian_metric_cooccurrence.pdf",  plot = avian_cooccur_plot,
-       width = 8, height = 7, units = "in", dpi = 300)
-ggsave("figs/carbon_metric_cooccurrence.pdf", plot = carbon_cooccur_plot,
-       width = 8, height = 7, units = "in", dpi = 300)

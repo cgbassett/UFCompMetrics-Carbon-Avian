@@ -20,7 +20,7 @@ carbon.meta <- carbon.data[ ,c("Rayyan.ID", "Full.citation", "Title","Year", "Jo
 
 #remove white space (leading and trailing zeros)
 carbon.meta <- carbon.meta %>% 
-  mutate(across(where(is.character), str_trim)))
+  mutate(across(where(is.character), str_trim))
 
 #replace empty cells with N/A
 carbon.meta <- replace(carbon.meta, carbon.meta=='', NA) 
