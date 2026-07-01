@@ -41,44 +41,66 @@ jaccard_similarity <- function(mat) {
   jacc
 }
 
-# Helper to plot clustered heatmap with dendrograms via pheatmap
-plot_cooccur_heatmap <- function(jacc_mat, title, filename = NA) {
+# pheatmap has no native legend-title argument, so add one as a grob in the
+# cell directly above the legend (keeps the "1" tick at the top of the bar)
+add_legend_title <- function(ph, label = "Jaccard\nsimilarity", fontsize = 8) {
+  g       <- ph$gtable
+  leg_col <- max(g$layout$l[g$layout$name == "legend"])
+  title   <- grid::textGrob(
+    label, x = grid::unit(0, "npc"), y = grid::unit(0.15, "npc"),
+    hjust = 0, vjust = 0, gp = grid::gpar(fontsize = fontsize)
+  )
+  gtable::gtable_add_grob(g, title, t = 2, l = leg_col, name = "legend_title")
+}
+
+# Helper to build clustered heatmap with dendrograms via pheatmap
+plot_cooccur_heatmap <- function(jacc_mat, title) {
   # sqrt(1 - Jaccard) is Euclidean; ward.D2 squares it internally, so the
   # input must be the un-squared distance (not 1 - S) for correct Ward's method
   d <- as.dist(sqrt(1 - jacc_mat))
 
-  pheatmap(
+  ph <- pheatmap(
     jacc_mat,
     clustering_distance_rows = d,
     clustering_distance_cols = d,
     clustering_method        = "ward.D2",
     color        = viridisLite::viridis(100),
     breaks       = seq(0, 1, length.out = 101),
-    legend_breaks = c(0, 0.25, 0.5, 0.75, 1, 1),
-    legend_labels = c("0", "0.25", "0.50", "0.75", "1",
-                      "Jaccard\nsimilarity\n"),
+    legend_breaks = c(0, 0.25, 0.5, 0.75, 1),
+    legend_labels = c("0", "0.25", "0.50", "0.75", "1"),
     border_color = "white",
     display_numbers = FALSE,
     main         = title,
     fontsize     = 8,
-    filename     = filename
+    silent       = TRUE
   )
+  add_legend_title(ph)
+}
+
+# Draw the augmented gtable to screen or to a PDF file
+draw_cooccur_heatmap <- function(g, filename = NULL, width = 8, height = 7) {
+  if (!is.null(filename)) {
+    pdf(filename, width = width, height = height)
+    on.exit(dev.off())
+  }
+  grid::grid.newpage()
+  grid::grid.draw(g)
 }
 
 avian_jacc  <- jaccard_similarity(avian_mat)
 carbon_jacc <- jaccard_similarity(carbon_mat)
 
-# Plot (dendrograms drawn on rows and columns)
+# Build (dendrograms drawn on rows and columns, legend titled above the bar)
 avian_cooccur_plot <- plot_cooccur_heatmap(avian_jacc,
                                            "Avian: Metric Co-occurrence (Jaccard Similarity)")
 carbon_cooccur_plot <- plot_cooccur_heatmap(carbon_jacc,
                                             "Carbon: Metric Co-occurrence (Jaccard Similarity)")
 
-# Save (pheatmap writes directly to file based on extension)
-plot_cooccur_heatmap(avian_jacc,
-                     "Avian: Metric Co-occurrence (Jaccard Similarity)",
-                     filename = "figs/avian_metric_cooccurrence.pdf")
-plot_cooccur_heatmap(carbon_jacc,
-                     "Carbon: Metric Co-occurrence (Jaccard Similarity)",
-                     filename = "figs/carbon_metric_cooccurrence.pdf")
+# Display
+draw_cooccur_heatmap(avian_cooccur_plot)
+draw_cooccur_heatmap(carbon_cooccur_plot)
+
+# Save
+draw_cooccur_heatmap(avian_cooccur_plot,  "figs/avian_metric_cooccurrence.pdf")
+draw_cooccur_heatmap(carbon_cooccur_plot, "figs/carbon_metric_cooccurrence.pdf")
 
