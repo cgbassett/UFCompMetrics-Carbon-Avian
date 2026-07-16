@@ -1,6 +1,19 @@
 # UFCompMetrics-Carbon-Avian
 
+<<<<<<< Updated upstream
 This is the working repository for an analysis of urban forest composition metrics used in studying urban forest management for avian or carbon outcomes.
+=======
+This is the repository for an analysis of urban forest composition metrics used in studying urban forest management for avian or carbon outcomes.
+## Requirements
+
+- R (developed under R 4.5.2)
+- The packages loaded in [`0-packages.R`](0-packages.R): `tidyverse`, `openxlsx`, `splitstackshape`, `cowplot`, `patchwork`, and `pheatmap`. Install any that are missing, e.g.:
+
+  ```r
+  install.packages(c("tidyverse", "openxlsx", "splitstackshape",
+                     "cowplot", "patchwork", "pheatmap"))
+  ```
+>>>>>>> Stashed changes
 
 ## Data setup
 
