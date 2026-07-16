@@ -1,7 +1,6 @@
 # UFCompMetrics-Carbon-Avian
 
 This is the working repository for an analysis of urban forest composition metrics used in studying urban forest management for avian or carbon outcomes.
-
 ## Requirements
 
 - R (developed under R 4.5.2)
@@ -19,8 +18,8 @@ The raw data files are not included in this repository. Place the following thre
 | File | Description |
 |------|-------------|
 | `ListofUFCompMetrics.xlsx` | Lookup of composition metrics and their categories |
-| `CarbonUFCompositionMetric_RawData_21Nov24.csv` | Carbon article extractions |
-| `AvianUFCompositionMetric_RawData_21Nov24.csv` | Avian article extractions |
+| `Carbon_UFCompMetricData_21Nov24.csv` | Carbon article extractions |
+| `Avian_UFCompMetricData_21Nov24.csv` | Avian article extractions |
 
 The scripts locate this folder through the `DATA_DIR` environment variable. Set it before running, either for the session:
 
@@ -53,3 +52,4 @@ in any order — no manual sourcing of the packages or cleaning step is required
 | [`5-Scale.R`](5-Scale.R) | Summary tables of composition metrics by urban scale |
 | [`6-articlespermetric.R`](6-articlespermetric.R) | Histograms of the number of composition metrics used per article |
 | [`7-VegLayerTypes.R`](7-VegLayerTypes.R) | Vegetation layer type analyses across the carbon and avian datasets |
+| [`8-NoTitleFigs.R`](8-NoTitleFigs.R) | Regenerates publication-ready, title-free versions of the figures into `figs/no title figs/` (sources scripts 2–7 to rebuild the plots) |

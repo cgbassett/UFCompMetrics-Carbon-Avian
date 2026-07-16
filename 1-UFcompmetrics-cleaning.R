@@ -1,4 +1,4 @@
-#Corey Bassett
+#Corinne Bassett
 #Script for analysis of UF composition metrics
 
 #packagesneeded
@@ -11,9 +11,9 @@ list.compmetrics <- read.xlsx(file.path(data_dir, "ListofUFCompMetrics.xlsx"))
 #======CARBON======
 
 #loading carbon data and formatting
-carbon.data<- read.csv(file.path(data_dir, "CarbonUFCompositionMetric_RawData_21Nov24.csv"))
+carbon.data<- read.csv(file.path(data_dir, "Carbon_UFCompMetricData_21Nov24.csv"))
 
-#cut down to only necessary columns for figures (so far..)
+#cut down to only necessary columns for figures
 carbon.meta <- carbon.data[ ,c("Rayyan.ID", "Full.citation", "Title","Year", "Journal", "Publication.Type.", "Country.of.First.Author",
                                "Study.Country", "Urb.scale", "Year.start", "Year.end", "Comparator", 
                                "Forest.comp", "Rec.included","Rec1", "Rec2", "Rec3", "Carbon.metric","Composition.metric")]
@@ -85,9 +85,9 @@ print(carboncounts_barplot)
 #===AVIAN===
 
 #loading avian data and formatting
-avian.data<- read.csv(file.path(data_dir, "AvianUFCompositionMetric_RawData_21Nov24.csv"))
+avian.data<- read.csv(file.path(data_dir, "Avian_UFCompMetricData_21Nov24.csv"))
 
-#cut down to only necessary columns for figures (so far..)
+#cut down to only necessary columns for figures
 avian.meta <- avian.data[,c("Rayyan.ID",
                             "Citation", 
                             "Country.Auth", 

@@ -1,8 +1,12 @@
-#Corey Bassett
+#Corinne Bassett
 #Standalone script: side-by-side bar charts of percent of articles by
 #composition metric, for carbon and avian articles.
 
-# Packages ------------------------------------------------------------------
+# Packages -----------
+
+# Load data
+avian.data <- read.csv(file.path(data_dir, "Avian_UFCompMetricData_21Nov24.csv"))
+carbon.data <- read.csv(file.path(data_dir, "Carbon_UFCompMetricData_21Nov24.csv"))-------------------------------------------------------
 library(tidyverse)      # dplyr, stringr, ggplot2, forcats, etc.
 library(splitstackshape) # cSplit_e()
 library(patchwork)       # combine plots with a shared legend
