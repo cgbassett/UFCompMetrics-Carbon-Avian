@@ -5,3 +5,4 @@
 .positai
 *.csv
 .Renviron
+.DS_Store

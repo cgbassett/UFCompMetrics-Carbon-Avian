@@ -1,8 +1,8 @@
 #Corey Bassett
 #Script for visualizations of number of articles per metric
 
-#packagesneeded
-source('0-packages.R')
+#packages and cleaned data (sources 0-packages.R internally)
+source('1-UFcompmetrics-cleaning.R')
 
 
 #Count of metrics per article AVIAN

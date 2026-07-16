@@ -1,8 +1,8 @@
 #Corey Bassett
 #Script for frequencies of Carbon and Avian outcomes and heatmaps. See Table 3 of Hutt-Taylor et al., 2024 for definitions).
 
-#packagesneeded
-source('0-packages.R')
+#packages and cleaned data (sources 0-packages.R internally)
+source('1-UFcompmetrics-cleaning.R')
 
 #carbon outcomes
 

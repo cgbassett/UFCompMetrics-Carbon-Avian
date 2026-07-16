@@ -34,7 +34,7 @@ carbonpct_barplot <- pct.carbon.compmetricsonly_df %>%
   geom_bar(stat = "identity", fill = "#FDE725FF") +
   coord_flip() +
   scale_y_continuous(labels = scales::percent_format(scale = 1), limits = c(0, 100)) +
-  labs(title = "Percent of carbon articles by composition metric (n=109)", x = "Composition metric", y = "Percent of articles") +
+  labs(x = "Composition metric", y = "Percent of articles") +
   theme_minimal() +
   theme(axis.text.y = element_text(size = 10)) +
   geom_text(aes(label = paste0(round(Percent, 1), "%")), hjust = -0.1) #value labels on bars
@@ -51,7 +51,6 @@ avianpct_barplot <- pct.avian.compmetricsonly_df %>%
   coord_flip() +
   scale_y_continuous(labels = scales::percent_format(scale = 1), limits = c(0, 100)) +
   labs(
-    title = "Percent of avian articles by composition metric (n=158)",
     x = "Composition metric",
     y = "Percent of articles"
   ) +
@@ -79,7 +78,7 @@ print(sidebyside)
     combined_plot <- plot_grid(
       carbonpct_barplot, 
       avianpct_barplot, 
-      labels = c("Carbon", "Avian"),
+      labels = c("Carbon (n=109)", "Avian (n=158)"),
       ncol = 2,
       align = "v",  # Align vertically for y-axis consistency
       axis = "tb"   # Align top and bottom axes

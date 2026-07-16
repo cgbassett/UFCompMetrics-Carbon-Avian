@@ -1,8 +1,8 @@
 #Corey Bassett
 #Script for metric co-occurrence analysis (Jaccard similarity)
 
-#packagesneeded
-source('0-packages.R')
+#packages and cleaned data (sources 0-packages.R internally)
+source('1-UFcompmetrics-cleaning.R')
 
 # Build binary matrices (articles x metrics), replacing NA with 0
 avian_comp_cols <- names(avian.separatemetrics) |> stringr::str_subset("^Composition\\.metric_")
@@ -79,7 +79,7 @@ plot_cooccur_heatmap <- function(jacc_mat, title) {
 
 # Draw the augmented gtable to screen or to a PDF file.
 # width/height are in mm (pdf() expects inches, so convert with 1 mm = 1/25.4 in)
-draw_cooccur_heatmap <- function(g, filename = NULL, width = 174, height = 234) {
+draw_cooccur_heatmap <- function(g, filename = NULL, width = 174, height = 174) {
   if (!is.null(filename)) {
     pdf(filename, width = width / 25.4, height = height / 25.4)
     on.exit(dev.off())

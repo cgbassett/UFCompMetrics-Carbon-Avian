@@ -1,8 +1,8 @@
 #Corey Bassett
 #Script for visualizations and analysis of vegetation layer types category between the avian and carbon datasets
 
-#packagesneeded
-source('0-packages.R')
+#packages and cleaned data (sources 0-packages.R internally)
+source('1-UFcompmetrics-cleaning.R')
 
 #How many vegetation layer types are considered per article?
 

@@ -1,25 +1,28 @@
-# all packages needed for scripts from Kayleigh H-T's sys map analysis, plus others Corey added
+# Packages used across the analysis scripts
 
-library(dplyr)
-library(magrittr)
-library(tidyverse)
-library(maps)
-library(bibliometrix)
-library(ggplot2)
-library(ggthemes)
-library(ggpubr)
-library(ggrepel)
-library(plotly)
-library(rphylopic)
-library(png)
-library(cowplot)
-library(cartography)
-library(sf)
-library(data.table)
-library(janitor)
-library(reshape2)
-library(splitstackshape)
-library(cowplot)
-library(patchwork)
-library(forcats)
+library(tidyverse)       # dplyr, ggplot2, stringr, tidyr, forcats, etc.
+library(openxlsx)        # read.xlsx()
+library(splitstackshape) # cSplit_e()
+library(cowplot)         # plot_grid(), ggdraw(), draw_label()
+library(patchwork)       # combine ggplots (plot_layout())
+library(pheatmap)        # clustered heatmaps
+rm(list = ls())
 
+scripts <- c(
+  "1-UFcompmetrics-cleaning.R",
+  "2-PctArticlesbyMetricsbyAvianCarbon.R",
+  "3-CarbonAvianOutcomes.R",
+  "4-ClusterAnalysis.R",
+  "5-Scale.R",
+  "6-articlespermetric.R",
+  "7-VegLayerTypes.R"
+)
+
+results <- data.frame(script = scripts, status = NA_character_, message = NA_character_)
+for (i in seq_along(scripts)) {
+  res <- tryCatch({ source(scripts[i]); "OK" },
+                  error = function(e) paste("ERROR:", conditionMessage(e)))
+  results$status[i]  <- if (res == "OK") "pass" else "fail"
+  results$message[i] <- if (res == "OK") "" else res
+}
+results
